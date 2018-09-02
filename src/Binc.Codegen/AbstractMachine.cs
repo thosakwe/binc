@@ -1,6 +1,6 @@
 namespace Binc.Codegen
 {
-    abstract class AbstractMachine
+    public abstract class AbstractMachine
     {
         public virtual string Name { get; }
 

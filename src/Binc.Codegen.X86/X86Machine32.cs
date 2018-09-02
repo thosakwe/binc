@@ -1,6 +1,6 @@
 namespace Binc.Codegen.X86
 {
-    class X86Machine32 : AbstractMachine
+    public class X86Machine32 : AbstractMachine
     {
         public override string Name
         {
