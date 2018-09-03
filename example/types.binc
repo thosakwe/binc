@@ -1,0 +1,23 @@
+type MyEnum = enum { Foo, Bar, Baz }
+
+type MyUnion = MyEnum | Int32
+
+type MyTuple = (Int32, Int64)
+
+type MyTupleWithNames = (int: Int32, long: Int64)
+
+type MyParameterized = (type T) (Int32, T)
+
+type MySized = (val size: Int32) Array(Uint16, size * 2)
+
+fn doIt (x: Int32, y: Int32): MyParameterized(Int64) {
+  return (2, 3)
+}
+  
+fn main () : Int32 {
+  // This 'as' cast discards the other members
+  val result = doIt(1, 2) as (a: Int32)
+  
+  // Just return the field we need
+  return result.a
+}

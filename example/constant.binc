@@ -1,0 +1,18 @@
+val Ascii = (
+  A: 0x12,
+  // ...
+  z: 0x13
+)
+
+type Number = Uint8 | Uint16 // Etc.
+
+fn (Number n) toString() : String {
+  var chars = Array(Uint16).new()
+  var nbr = n
+  
+  while (someMod) {
+    chars = [...chars, someAscii]
+  }
+  
+  return String.fromBytes(chars)
+}

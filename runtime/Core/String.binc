@@ -1,0 +1,22 @@
+type String = (length: Uint64, characters: Array(Uint16))
+
+// Instance method
+fn (String this) reverse (): String {
+  val chars = Array(Uint16).new()
+  var i = 0
+  
+  while (i-- >= 0) {
+    chars = [...chars, this.characters at (this.length - 1 - i)]
+  }
+  
+  return (this.length, chars)
+}
+
+fn (val len: Uint64) String.fromBytes(characters: Array(Uint16, len)): String {
+  return (len, characters)
+}
+
+fn main() : Int32 {
+  val s = 'hello'.reverse() // Literal, hooray
+  return s.length as Int32
+}

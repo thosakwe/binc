@@ -2,36 +2,67 @@ grammar Binc;
 
 compilationUnit: directive* declaration*;
 
-directive:
-    'import' #ImportDirective
-;
+directive: 'import' # ImportDirective;
 
-declaration:
-    'func' name=Identifier functionSignature functionBody #FunctionDeclaration
-;
+declaration: typeAliasDeclaration | functionDeclaration;
 
-functionSignature: parameterList ':' returnType=type;
+typeAliasDeclaration: 'type' name = Identifier '=' type;
+
+functionDeclaration:
+	'fn' templateParameters? thisParameter? name = Identifier functionSignature functionBody;
+
+thisParameter: '(' type name = Identifier ')';
+
+functionSignature: parameterList ':' returnType = type;
 
 functionBody: block;
 
 parameterList: '(' ((parameter ',')* parameter)? ')';
 
-parameter: name=Identifier ':' type;
+parameter: name = Identifier ':' type;
 
 type:
-    Identifier #TypeReference
-;
+	Identifier											# TypeReference
+	| left = type '|' right = type						# UnionType
+	| 'enum' '{' (Identifier ',')* Identifier '}'		# EnumType
+	| '(' (tupleTypeMember ',')* tupleTypeMember ')'	# TupleType
+	| templateParameters result = type					# TemplateType
+	| '(' type ')'										# ParenthesizedType
+	| callee = type templateArguments					# TemplateTypeInstantiation;
+
+templateParameter:
+	'val' name = Identifier ':' type	# ValueTemplateItem
+	| 'type' name = Identifier			# TypeTemplateItem;
+
+templateParameters:
+	'(' (templateParameter ',')* templateParameter ')';
+
+templateArguments:
+	'(' (templateArgument ',')* templateArgument ')';
+
+templateArgument:
+	expression	# ExpressionTemplateArgument
+	| type		# TypeTemplateArgument;
+
+tupleTypeMember: (name = Identifier ':') type;
 
 block: '{' statement* '}';
 
 statement:
-    expression #ExpressionStatement
-    | 'return' expression #ReturnStatement
-;
+	'while' condition = expression block	# WhileStatement
+	| expression							# ExpressionStatement
+	| 'return' expression					# ReturnStatement;
 
 expression:
-    Identifier
-;
+	Identifier								# IdentifierExpression
+	| expression '.' symbol = Identifier	# MemberExpression
+	| callee = expression '(' (
+		(arguments += expression ',')* arguments += expression
+	) ')'									# CallExpression
+	| '(' (expression ',')+ expression ')'	# TupleExpression
+	| expression 'as' type					# CastExpression
+	| '(' expression ')'					# ParenthesizedExpression;
 
+SingleLineComment: '//' (~'\n')* -> skip;
 Whitespace: [ \n\r\t]+ -> skip;
 Identifier: [A-Za-z_] [A-Za-z0-9_]*;
