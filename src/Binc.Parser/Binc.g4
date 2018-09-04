@@ -66,6 +66,7 @@ statement:
 
 expression:
 	Identifier #IdentifierExpression
+    | IntegerLiteral PowerOf10? #IntegerLiteralExpression
 	| expression '.' symbol = Identifier #MemberExpression
 	| callee = expression '(' ((arguments += expression ',')* arguments += expression) ')' #CallExpression
 	| '(' (expression ',')+ expression ')' #TupleExpression
@@ -74,4 +75,6 @@ expression:
 
 SingleLineComment: '//' (~'\n')* -> skip;
 Whitespace: [ \n\r\t]+ -> skip;
+IntegerLiteral: [0-9]+;
+PowerOf10: [Ee] '-'? [0-9]+;
 Identifier: [A-Za-z_] [A-Za-z0-9_]*;
