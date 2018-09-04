@@ -31,7 +31,14 @@ namespace Binc.Compiler
 
             optionSet.Add("h|help", "Display this help information.", _ => options.ShowHelp = true);
 
-            options.mArguments.AddRange(optionSet.Parse(args));
+            var rest = optionSet.Parse(args);
+
+            if (rest.Count > 0) {
+                options.InputFilename = rest[0];
+                rest.RemoveAt(0);
+            }
+
+            options.mArguments.AddRange(rest);
             options.mOptionSet = optionSet;
             return options;
         }

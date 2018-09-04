@@ -1,5 +1,9 @@
 grammar Binc;
 
+@header {
+#pragma warning disable 3021
+}
+
 compilationUnit:
     directive* declaration*;
 
@@ -44,10 +48,10 @@ templateParameter:
 	| 'type' name = Identifier #TypeTemplateItem;
 
 templateParameters:
-	'(' (templateParameter ',')* templateParameter ')';
+	'<' (templateParameter ',')* templateParameter '>';
 
 templateArguments:
-	'(' (templateArgument ',')* templateArgument ')';
+	'<' (templateArgument ',')* templateArgument '>';
 
 templateArgument:
 	expression #ExpressionTemplateArgument
@@ -68,10 +72,16 @@ expression:
 	Identifier #IdentifierExpression
     | IntegerLiteral PowerOf10? #IntegerLiteralExpression
 	| expression '.' symbol = Identifier #MemberExpression
-	| callee = expression '(' ((arguments += expression ',')* arguments += expression) ')' #CallExpression
-	| '(' (expression ',')+ expression ')' #TupleExpression
+	| callee = expression templateArguments? arguments #CallExpression
+	| '(' (tupleMember ',')+ tupleMember ')' #TupleExpression
 	| expression 'as' type #CastExpression
 	| '(' expression ')' #ParenthesizedExpression;
+
+tupleMember:
+    (name = Identifier ':') value=expression;
+
+arguments:
+    '(' ((expression ',')* expression) ')';
 
 SingleLineComment: '//' (~'\n')* -> skip;
 Whitespace: [ \n\r\t]+ -> skip;
